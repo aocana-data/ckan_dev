@@ -14,3 +14,9 @@ source /usr/lib/ckan/venv/bin/activate
 python --version
 
 La respuesta será ... Python 3.8.6 (o una version superior)
+
+
+## Agregar usuario admin
+
+ckan -c /etc/ckan/production.ini sysadmin add admin email=admin@example.com name=administrador
+

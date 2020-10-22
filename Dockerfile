@@ -12,10 +12,17 @@ RUN apt-get -q -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
     && apt-get -q -y install -o APT::Immediate-Configure=false -f  \
         python3-dev \
-        libpq-dev \
         python3-pip \
         python3-venv \
+        python3-wheel \
+        libpq-dev \
+        libxml2-dev \
+        libxslt-dev \
+        libgeos-dev \
+        libssl-dev \
+        libffi-dev \
         postgresql-client \
+        build-essential \
         git-core \
         vim \
         wget \
