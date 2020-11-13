@@ -34,6 +34,7 @@ set_environment () {
   export CKAN_SMTP_PASSWORD=${CKAN_SMTP_PASSWORD}
   export CKAN_SMTP_MAIL_FROM=${CKAN_SMTP_MAIL_FROM}
   export CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
+  export POSTGRES_HOST=${POSTGRES_HOST}
 }
 
 write_config () {
@@ -42,7 +43,7 @@ write_config () {
 }
 
 # Wait for PostgreSQL
-while ! pg_isready -h db -U ckan; do
+while ! pg_isready -h $POSTGRES_HOST -U ckan; do
   sleep 1;
 done
 
