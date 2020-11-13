@@ -19,7 +19,7 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 La respuesta será ... Python 3.8.6 (o una version superior)
 
 
-## Implentacio con Docker
+## Implentacion con Docker
 
 1. clonar el repositorio
 
@@ -37,75 +37,75 @@ CKAN_SITE_ID=
 
 ejemplos: 
 
-www.portal-de-datos.com
+- www.portal-de-datos.com
 
-127.0.0.1
+- 127.0.0.1
 
-10.0.0.10
+- 10.0.0.10
 
 CKAN_SITE_URL=
 
 ejemplos:
 
-http://192.168.0.9
+- http://192.168.0.9
 
-https://portal-de-datos.com
+- https://portal-de-datos.com
 
-http://127.0.0.1
+- http://127.0.0.1
 
-http://10.0.0.1
+- http://10.0.0.1
 
 CKAN_PORT=
 
 ejemplos:
 
-80
+- 80
 
-8080
+- 8080
 
-443
+- 443
 
-5000
+- 5000
 
 POSTGRES_HOST=
 
 ejemplos:
 
-192.168.0.9
+- 192.168.0.9
 
-mydb-host.com
+- mydb-host.com
 
-10.10.1.10
+- 10.10.1.10
 
 POSTGRES_PASSWORD=
 
 ejemplos:
 
-example
+- example
 
-my-secret-password
+- my-secret-password
 
 POSTGRES_PORT=
 
 ejemplos:
 
-5432
+- 5432
 
-6000
+- 6000
 
 DATASTORE_READONLY_PASSWORD=
 
 ejemplos:
 
-datastore
+- datastore
 
-datastore-password
+- datastore-password
 
-SuperSecretPassword
+- SuperSecretPassword
 
 3. Compilar la imagen docker e iniciar el stack
 
-sudo docker-compose up -d --build
+- sudo docker-compose up -d --build
 
 4. Ingresar al sistema
 
@@ -114,11 +114,10 @@ Luego de crear un usuario como se explica en el capitulo Agregar usuario abrir e
 
 ## Agregar usuario admin
 
-docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add admin email=admin@example.com name=administrador
+- docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add admin email=admin@example.com name=administrador
 
 
 Este comando crea un usuario para iniciar sesion. Las credenciales son
 
 usuario: administrador
-
 password: se ingresa al momento de crear el usuario
