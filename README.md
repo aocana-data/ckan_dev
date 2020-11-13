@@ -31,7 +31,8 @@ La respuesta será ... Python 3.8.6 (o una version superior)
 
 - vi .env
 
-``` Asegurarse de editar las siguientes variables
+``` 
+Asegurarse de editar las siguientes variables
 
 CKAN_SITE_ID=
 
@@ -102,6 +103,8 @@ ejemplos:
 - datastore-password
 
 - SuperSecretPassword
+
+```
 
 3. Compilar la imagen docker e iniciar el stack
 
