@@ -8,9 +8,10 @@ RUN echo deb http://ftp.de.debian.org/debian testing main >> /etc/apt/sources.li
 		&& echo 'APT::Default-Release "testing";' | tee -a /etc/apt/apt.conf.d/00local
 
 # Install required system packages -- Immeditate-Configure=false solves python3.6 install issue
-RUN apt-get -q -y update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
-    && apt-get -q -y install -o APT::Immediate-Configure=false -f  \
+RUN apt-get -q -y update 
+RUN apt-get -q -y install -o APT::Immediate-Configure=false -f apt-utils
+RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
+		&& apt-get -q -y install -o APT::Immediate-Configure=false -f  \
         python3-dev \
         python3-pip \
         python3-venv \
@@ -51,11 +52,11 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
 RUN ckan-pip install -U pip && \
-    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
-    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
-    ckan-pip install -e $CKAN_VENV/src/ckan/ && \
-    ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
-    cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
+    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt 
+RUN ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt
+RUN ckan-pip install -e $CKAN_VENV/src/ckan/ 
+RUN ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini 
+RUN cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     chmod +x /ckan-entrypoint.sh && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
 
