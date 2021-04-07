@@ -9,14 +9,6 @@ def example_helper():
     # Just return some example text.
     return 'This is some example text.'
 
-
-@plugins.toolkit.chained_helper
-def dump_json(next_func, obj, **kw):
-    if 'test_itemplatehelpers' in kw:
-        return 'Not today'
-    return next_func(obj, **kw)
-
-
 class ExampleITemplateHelpersPlugin(plugins.SingletonPlugin):
     '''An example that shows how to use the ITemplateHelpers plugin interface.
 
@@ -34,7 +26,4 @@ class ExampleITemplateHelpersPlugin(plugins.SingletonPlugin):
     # Tell CKAN what custom template helper functions this plugin provides,
     # see the ITemplateHelpers plugin interface.
     def get_helpers(self):
-        return {
-            'example_helper': example_helper,
-            'dump_json': dump_json
-        }
+        return {'example_helper': example_helper}

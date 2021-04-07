@@ -262,7 +262,7 @@ def _read(id, limit, group_type):
     def drill_down_url(**by):
         return h.add_url_param(
             alternative_url=None,
-            controller=group_type,
+            controller=u'group',
             action=u'read',
             extras=dict(id=g.group_dict.get(u'name')),
             new_params=by)
@@ -300,19 +300,9 @@ def _read(id, limit, group_type):
 
     facets = OrderedDict()
 
-    org_label = h.humanize_entity_type(
-        u'organization',
-        h.default_group_type(u'organization'),
-        u'facet label') or _(u'Organizations')
-
-    group_label = h.humanize_entity_type(
-        u'group',
-        h.default_group_type(u'group'),
-        u'facet label') or _(u'Groups')
-
     default_facet_titles = {
-        u'organization': org_label,
-        u'groups': group_label,
+        u'organization': _(u'Organizations'),
+        u'groups': _(u'Groups'),
         u'tags': _(u'Tags'),
         u'res_format': _(u'Formats'),
         u'license_id': _(u'Licenses')
@@ -767,12 +757,7 @@ class BulkProcessView(MethodView):
             group_dict = _action(u'group_show')(context, data_dict)
             group = context['group']
         except NotFound:
-            group_label = h.humanize_entity_type(
-                u'organization' if is_organization else u'group',
-                group_type,
-                u'default label') or _(
-                    u'Organization' if is_organization else u'Group')
-            base.abort(404, _(u'{} not found'.format(group_label)))
+            base.abort(404, _(u'Group not found'))
         except NotAuthorized:
             base.abort(403,
                        _(u'User %r not authorized to edit %s') % (g.user, id))
@@ -1030,12 +1015,13 @@ class DeleteGroupView(MethodView):
         context = self._prepare(id)
         try:
             _action(u'group_delete')(context, {u'id': id})
-            group_label = h.humanize_entity_type(
-                u'group',
-                group_type,
-                u'has been deleted') or _(u'Group')
-            h.flash_notice(
-                _(u'%s has been deleted.') % _(group_label))
+            if group_type == u'organization':
+                h.flash_notice(_(u'Organization has been deleted.'))
+            elif group_type == u'group':
+                h.flash_notice(_(u'Group has been deleted.'))
+            else:
+                h.flash_notice(
+                    _(u'%s has been deleted.') % _(group_type.capitalize()))
             group_dict = _action(u'group_show')(context, {u'id': id})
         except NotAuthorized:
             base.abort(403, _(u'Unauthorized to delete group %s') % u'')
@@ -1146,12 +1132,12 @@ class MembersGroupView(MethodView):
         g.roles = roles
         g.user_role = user_role
 
-        extra_vars = {
+        extra_vars.update({
             u"group_dict": group_dict,
             u"roles": roles,
             u"user_role": user_role,
             u"group_type": group_type
-        }
+        })
         return base.render(_replace_group_org(u'group/member_new.html'),
                            extra_vars)
 

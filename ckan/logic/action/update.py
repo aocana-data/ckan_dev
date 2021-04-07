@@ -507,7 +507,7 @@ def package_revise(context, data_dict):
         model.Session.rollback()
         raise ValidationError([{k: [de.error]}])
 
-    _check_access('package_revise', context, orig)
+    _check_access('package_revise', context, {"update": orig})
 
     # future-proof return dict by putting package data under
     # "package". We will want to return activity info
@@ -655,7 +655,7 @@ def _group_or_org_update(context, data_dict, is_org=False):
     except AttributeError:
         schema = group_plugin.form_to_db_schema()
 
-    upload = uploader.get_uploader('group', group.image_url)
+    upload = uploader.get_uploader('group')
     upload.update_data_dict(data_dict, 'image_url',
                             'image_upload', 'clear_upload')
 
@@ -1216,6 +1216,17 @@ def _bulk_update_dataset(context, data_dict, update_dict):
         .filter(model.Package.owner_org == org_id) \
         .update(update_dict, synchronize_session=False)
 
+    # Handle Activity Stream for Bulk Operations
+    user = context['user']
+    user_obj = model.User.by_name(user)
+    if user_obj:
+        user_id = user_obj.id
+    else:
+        user_id = 'not logged in'
+    for dataset in datasets:
+        entity = model.Package.get(dataset)
+        activity = entity.activity_stream_item('changed', user_id)
+        model.Session.add(activity)
     model.Session.commit()
 
     # solr update here

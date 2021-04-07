@@ -449,7 +449,9 @@ class RegisterView(MethodView):
 def login():
     # Do any plugin login stuff
     for item in plugins.PluginImplementations(plugins.IAuthenticator):
-        item.login()
+        response = item.login()
+        if response:
+            return response
 
     extra_vars = {}
     if g.user:
@@ -480,7 +482,10 @@ def logged_in():
 def logout():
     # Do any plugin logout stuff
     for item in plugins.PluginImplementations(plugins.IAuthenticator):
-        item.logout()
+        response = item.logout()
+        if response:
+            return response
+
     url = h.url_for(u'user.logged_out_page')
     return h.redirect_to(
         _get_repoze_handler(u'logout_handler_path') + u'?came_from=' + url,
@@ -815,42 +820,6 @@ def followers(id):
     return base.render(u'user/followers.html', extra_vars)
 
 
-def sysadmin():
-    username = request.form.get(u'username')
-    status = asbool(request.form.get(u'status'))
-
-    try:
-        context = {
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user,
-            u'auth_user_obj': g.userobj,
-        }
-        data_dict = {u'id': username, u'sysadmin': status}
-        user = logic.get_action(u'user_patch')(context, data_dict)
-    except logic.NotAuthorized:
-        return base.abort(
-            403,
-            _(u'Not authorized to promote user to sysadmin')
-        )
-    except logic.NotFound:
-        return base.abort(404, _(u'User not found'))
-
-    if status:
-        h.flash_success(
-            _(u'Promoted {} to sysadmin'.format(user[u'display_name']))
-        )
-    else:
-        h.flash_success(
-            _(
-                u'Revoked sysadmin permission from {}'.format(
-                    user[u'display_name']
-                )
-            )
-        )
-    return h.redirect_to(u'admin.index')
-
-
 user.add_url_rule(u'/', view_func=index, strict_slashes=False)
 user.add_url_rule(u'/me', view_func=me)
 
@@ -894,4 +863,3 @@ user.add_url_rule(
     u'/<id>/api-tokens/<jti>/revoke', view_func=api_token_revoke,
     methods=(u'POST',)
 )
-user.add_url_rule(rule=u'/sysadmin', view_func=sysadmin, methods=['POST'])

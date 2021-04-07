@@ -588,6 +588,35 @@ class TestResourceCreate:
         assert (result['metadata_modified'] ==
                 datetime.datetime.utcnow().isoformat())
 
+    @pytest.mark.ckan_config('ckan.auth.allow_dataset_collaborators', True)
+    @pytest.mark.ckan_config('ckan.auth.allow_admin_collaborators', True)
+    @pytest.mark.parametrize('role', ['admin', 'editor'])
+    def test_collaborators_can_create_resources(self, role):
+
+        org1 = factories.Organization()
+        dataset = factories.Dataset(owner_org=org1['id'])
+
+        user = factories.User()
+
+        helpers.call_action(
+            'package_collaborator_create',
+            id=dataset['id'], user_id=user['id'], capacity=role)
+
+        context = {
+            'user': user['name'],
+            'ignore_auth': False,
+
+        }
+
+        created_resource = helpers.call_action(
+            'resource_create',
+            context=context,
+            package_id=dataset['id'],
+            name='created by collaborator',
+            url='https://example.com')
+
+        assert created_resource['name'] == 'created by collaborator'
+
 
 @pytest.mark.usefixtures("clean_db", "with_request_context")
 class TestMemberCreate(object):
@@ -1214,12 +1243,12 @@ class TestPackageMemberCreate(object):
                 'package_collaborator_create',
                 id=dataset['id'], user_id=user['id'], capacity=capacity)
 
-    def test_create_user_not_authorized(self):
+    def test_create_user_not_found(self):
         dataset = factories.Dataset()
         user = {'id': 'yyy'}
         capacity = 'editor'
 
-        with pytest.raises(logic.NotAuthorized):
+        with pytest.raises(logic.NotFound):
             helpers.call_action(
                 'package_collaborator_create',
                 id=dataset['id'], user_id=user['id'], capacity=capacity)

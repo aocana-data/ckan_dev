@@ -2,19 +2,13 @@
 FROM debian:stretch
 MAINTAINER Open Knowledge
 
-# Configure debian testing source to install python3.6 , main repo installs v3.5
-
-RUN echo deb http://ftp.de.debian.org/debian testing main >> /etc/apt/sources.list \
-		&& echo 'APT::Default-Release "testing";' | tee -a /etc/apt/apt.conf.d/00local
-
-# Install required system packages -- Immeditate-Configure=false solves python3.6 install issue
-RUN apt-get -q -y update 
-RUN apt-get -q -y install -o APT::Immediate-Configure=false -f apt-utils
-RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
-		&& apt-get -q -y install -o APT::Immediate-Configure=false -f  \
+# Install required system packages
+RUN apt-get -q -y update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
+    && apt-get -q -y install \
         python3-dev \
         python3-pip \
-        python3-venv \
+        python3-virtualenv \
         python3-wheel \
         libpq-dev \
         libxml2-dev \
@@ -22,6 +16,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
         libgeos-dev \
         libssl-dev \
         libffi-dev \
+        libsqlite3-dev \
+        tk-dev \
+        libgdbm-dev \
+        libc6-dev \ 
+        libbz2-dev \
+        zlib1g-dev \
+        libreadline-gplv2-dev \
+        libncursesw5-dev \
         postgresql-client \
         build-essential \
         git-core \
@@ -29,6 +31,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
         wget \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install python 3.7.2
+RUN wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz && \
+    tar xzf Python-3.7.2.tgz && \
+    cd Python-3.7.2 && \
+    ./configure --enable-optimizations && \
+    make altinstall
+RUN cd ..
+RUN rm Python-3.7.2.tgz && \
+    rm -r Python-3.7.2  
 
 # Define environment variables
 ENV CKAN_HOME /usr/lib/ckan
@@ -44,7 +56,7 @@ RUN useradd -r -u 900 -m -c "ckan account" -d $CKAN_HOME -s /bin/false ckan
 
 # Setup virtual environment for CKAN
 RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
-    python3 -m venv $CKAN_VENV && \
+    python3.7 -m venv $CKAN_VENV $CKAN_VENV && \
     ln -s $CKAN_VENV/bin/pip /usr/local/bin/ckan-pip &&\
     ln -s $CKAN_VENV/bin/paster /usr/local/bin/ckan-paster &&\
     ln -s $CKAN_VENV/bin/ckan /usr/local/bin/ckan
@@ -52,13 +64,28 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
 RUN ckan-pip install -U pip && \
-    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt 
-RUN ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt
-RUN ckan-pip install -e $CKAN_VENV/src/ckan/ 
-RUN ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini 
-RUN cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
+    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
+    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
+    ckan-pip install -e $CKAN_VENV/src/ckan/ && \
+    ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
+    cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     chmod +x /ckan-entrypoint.sh && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
+
+# Setup plugins
+
+# Xloader
+RUN ckan-pip install ckanext-xloader && \
+    ckan-pip install -r https://raw.githubusercontent.com/ckan/ckanext-xloader/master/requirements.txt && \
+    ckan-pip install -U requests[security]
+
+#Hierarchy
+RUN cd /usr/lib/ckan/venv/src && \
+    ckan-pip install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy"
+    ckan-pip install -r ckanext-hierarchy/requirements.txt        
+
+#Gobar_theme
+RUN ckan-pip install -e "git+https://github.com/gasti10/ckanext-gobar-theme.git#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 

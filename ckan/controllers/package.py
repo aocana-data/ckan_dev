@@ -252,19 +252,9 @@ class PackageController(base.BaseController):
 
             facets = OrderedDict()
 
-            org_label = h.humanize_entity_type(
-                u'organization',
-                h.default_group_type(u'organization'),
-                u'facet label') or _(u'Organizations')
-
-            group_label = h.humanize_entity_type(
-                u'group',
-                h.default_group_type(u'group'),
-                u'facet label') or _(u'Groups')
-
             default_facet_titles = {
-                'organization': org_label,
-                'groups': group_label,
+                'organization': _('Organizations'),
+                'groups': _('Groups'),
                 'tags': _('Tags'),
                 'res_format': _('Formats'),
                 'license_id': _('Licenses'),
