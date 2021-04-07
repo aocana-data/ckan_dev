@@ -1,4 +1,4 @@
-# ckan
+# Ckan
 
 Impementacion de Python3 en contenedor de Ckan 2.9
 
@@ -16,7 +16,7 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 
 - python --version
 
-La respuesta será ... Python 3.8.6 (o una version superior)
+La respuesta será ... Python 3.7.2
 
 
 ## Implentacion con Docker
@@ -34,86 +34,42 @@ La respuesta será ... Python 3.8.6 (o una version superior)
 ``` 
 Asegurarse de editar las siguientes variables
 
-CKAN_SITE_ID=
+CKAN_SITE_ID = 127.0.0.1
 
-ejemplos: 
+CKAN_SITE_URL= http://localhost:5000
 
-- www.portal-de-datos.com
+CKAN_PORT= 5000
 
-- 127.0.0.1
+POSTGRES_PASSWORD = ckan
 
-- 10.0.0.10
+POSTGRES_PORT = 5432
 
-CKAN_SITE_URL=
-
-ejemplos:
-
-- http://192.168.0.9
-
-- https://portal-de-datos.com
-
-- http://127.0.0.1
-
-- http://10.0.0.1
-
-CKAN_PORT=
-
-ejemplos:
-
-- 80
-
-- 8080
-
-- 443
-
-- 5000
-
-POSTGRES_HOST=
-
-ejemplos:
-
-- 192.168.0.9
-
-- mydb-host.com
-
-- 10.10.1.10
-
-POSTGRES_PASSWORD=
-
-ejemplos:
-
-- example
-
-- my-secret-password
-
-POSTGRES_PORT=
-
-ejemplos:
-
-- 5432
-
-- 6000
-
-DATASTORE_READONLY_PASSWORD=
-
-ejemplos:
-
-- datastore
-
-- datastore-password
-
-- SuperSecretPassword
+DATASTORE_READONLY_PASSWORD = datastore
 
 ```
 
-3. Compilar la imagen docker e iniciar el stack
+4. Compilar la imagen docker e iniciar el stack
 
 - sudo docker-compose up -d --build
 
+Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL en su versión original.
+
+5. Ingresar al contenedor CKAN y activar los plugins.
+
+- sudo docker-compose exec ckan 
+- vim /etc/ckan/production.ini
+- agregar en la linea de plugins:
+    datastore xloader hierarchy_display hierarchy_form gobar_theme
+
+6. Reiniciar si es necesario el contenedor CKAN 
+
+- sudo docker-compose restart ckan
+
+Despues de este paso, CKAN con los plugins debería estar corriendo en CKAN_SITE_URL.
+Chequear los logs
+- docker logs -f ckan
+
 4. Ingresar al sistema
-
-Luego de crear un usuario como se explica en el capitulo Agregar usuario abrir en el navegador web la direccion que se ingreso en la variable CKAN_SITE_URL en el paso 2
-
 
 ## Agregar usuario admin
 
