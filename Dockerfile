@@ -81,7 +81,7 @@ RUN ckan-pip install ckanext-xloader && \
 
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \
-    ckan-pip install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy"
+    ckan-pip install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
     ckan-pip install -r ckanext-hierarchy/requirements.txt        
 
 #Gobar_theme
