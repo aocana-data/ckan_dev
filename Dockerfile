@@ -29,18 +29,19 @@ RUN apt-get -q -y update \
         git-core \
         vim \
         wget \
+        supervisor \ 
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install python 3.7.2
-RUN wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz && \
-    tar xzf Python-3.7.2.tgz && \
-    cd Python-3.7.2 && \
+# Install python 3.7.9
+RUN wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz && \
+    tar xzf Python-3.7.9.tgz && \
+    cd Python-3.7.9 && \
     ./configure --enable-optimizations && \
     make altinstall
 RUN cd ..
-RUN rm Python-3.7.2.tgz && \
-    rm -r Python-3.7.2  
+RUN rm Python-3.7.9.tgz && \
+    rm -r Python-3.7.9  
 
 # Define environment variables
 ENV CKAN_HOME /usr/lib/ckan
@@ -77,7 +78,14 @@ RUN ckan-pip install -U pip && \
 # Xloader
 RUN ckan-pip install ckanext-xloader && \
     ckan-pip install -r https://raw.githubusercontent.com/ckan/ckanext-xloader/master/requirements.txt && \
-    ckan-pip install -U requests[security]
+    ckan-pip install -U requests[security] && \
+    cp /usr/lib/ckan/venv/src/ckan/ckan/config/supervisor-ckan-worker.conf /etc/supervisor/conf.d && \
+    sed -i 's/default/venv/' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
+    sed -i 's/default//' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
+    sed -i 's/ckan.ini/production.ini/' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
+    mkdir -m 777 /var/log/ckan/ && \
+    cat > /var/log/ckan/ckan-worker.stdout.log && \
+    supervisord
 
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \

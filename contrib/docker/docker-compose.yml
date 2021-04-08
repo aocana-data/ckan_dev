@@ -38,6 +38,7 @@ services:
       - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8
+      - ckan.locale_default=es
 
 
     volumes:
