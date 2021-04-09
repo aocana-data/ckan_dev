@@ -76,7 +76,7 @@ Chequear los logs
 
 ## Agregar usuario admin
 
-- docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
+- sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
 
 
 Este comando crea un usuario para iniciar sesion. Las credenciales son
