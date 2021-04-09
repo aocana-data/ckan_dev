@@ -1,10 +1,10 @@
 # Ckan
 
-Impementacion de Python3 en contenedor de Ckan 2.9
+Impementacion de Python3.7.9 en contenedor de Ckan 2.9.2
 
 ## Verificar que ckan corre bajo python3.6+
 
-Al compilar la iagen no debe arrojar el siguiente error
+Al compilar la imagen no debe arrojar el siguiente error
 
 DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support pip 21.0 will remove support for this functionality.
 
@@ -16,14 +16,14 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 
 - python --version
 
-La respuesta será ... Python 3.7.2
+La respuesta será ... Python 3.7.9
 
 
 ## Implentacion con Docker
 
 1. clonar el repositorio
 
-- git clone https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
+- git clone --branch develop-ckan2.9.2-py3.7.2 https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
 
 2. Editar el archivo de variables de entorno
 
@@ -54,22 +54,25 @@ DATASTORE_READONLY_PASSWORD = datastore
 
 Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL en su versión original.
 
-5. Ingresar al contenedor CKAN y activar los plugins.
+5. Setear los permisos necesarios para que el datastore funcione correctamente.
+
+- sudo docker exec ckan /usr/local/bin/ckan -c /etc/ckan/production.ini datastore set-permissions | sudo docker exec -i db psql -U ckan
+
+6. Ingresar al contenedor CKAN y activar los plugins.
 
 - sudo docker-compose exec ckan 
 - vim /etc/ckan/production.ini
 - agregar en la linea de plugins:
     datastore xloader hierarchy_display hierarchy_form gobar_theme
 
-6. Reiniciar si es necesario el contenedor CKAN 
+7. Reiniciar si es necesario el contenedor CKAN 
 
 - sudo docker-compose restart ckan
 
 Despues de este paso, CKAN con los plugins debería estar corriendo en CKAN_SITE_URL.
+
 Chequear los logs
 - docker logs -f ckan
-
-4. Ingresar al sistema
 
 ## Agregar usuario admin
 
