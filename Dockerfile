@@ -93,8 +93,8 @@ RUN ckan-pip install ckanext-xloader && \
     sed -i 's/ckan.ini/production.ini/' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
     mkdir -m 777 /var/log/ckan/ && \
     cat > /var/log/ckan/ckan-worker.stdout.log && \
+    ckan config-tool /etc/ckan/production.ini "ckanext.xloader.jobs_db.uri = postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan" && \
     supervisord
-RUN ckan config-tool /etc/ckan/production.ini "ckanext.xloader.jobs_db.uri = postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan"
 
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \
