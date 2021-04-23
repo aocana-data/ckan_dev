@@ -95,6 +95,16 @@ RUN cd /usr/lib/ckan/venv/src && \
 #Gobar_theme
 RUN ckan-pip install -e "git+https://github.com/gasti10/ckanext-gobar-theme.git#egg=ckanext-gobar_theme"
 
+#Series Tiempo Ar Explorer
+#RUN ckan-pip install -e "git+https://github.com/datosgobar/ckanext-seriestiempoarexplorer.git#egg=ckanext-seriestiempoarexplorer"
+
+#Harvest
+#RUN ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
+#    cd /usr/lib/ckan/default/src/ckanext-harvest/ && \
+#    ckan-pip install -r pip-requirements.txt
+
+
+
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
 USER ckan
