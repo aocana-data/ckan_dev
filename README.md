@@ -27,14 +27,28 @@ La respuesta debería ser --> Python 3.7.9, también se puede ver el estado de l
 
 - git clone --branch develop-ckan2.9.2-py3.7.2 https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
 
-2. Editar el archivo de variables de entorno
+2. Editar las variables de entorno del archivo Dockerfile
+
+- cd ckan
+- vi Dockerfile
+
+``` 
+Asegurarse de editar las variables con la configuración que corresponda
+
+ENV POSTGRES_PASSWORD=ckan
+#Habilitar los plugins que crea correspondiente
+ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme
+
+```
+
+3. Editar el archivo de variables de entorno del docker-compose
 
 - cd ckan/contrib/docker
 
 - vi .env
 
 ``` 
-Asegurarse de editar las siguientes variables
+Asegurarse de editar las siguientes variables con la configuración que corresponda
 
 CKAN_SITE_ID = 127.0.0.1
 
@@ -54,31 +68,31 @@ DATASTORE_READONLY_PASSWORD = datastore
 
 - sudo docker-compose up -d --build
 
-Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL en su versión original.
+Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 5. Setear los permisos necesarios para que el datastore funcione correctamente.
 
 - sudo docker exec ckan /usr/local/bin/ckan -c /etc/ckan/production.ini datastore set-permissions | sudo docker exec -i db psql -U ckan
 
-6. Ingresar al contenedor CKAN y activar los plugins.
+6. (Opcional)Iniciar el harvester de ser necesario
 
-- sudo docker-compose exec ckan 
-- vim /etc/ckan/production.ini
-- agregar en la linea de plugins:
-    datastore xloader hierarchy_display hierarchy_form gobar_theme
+- sudo docker exec ckan ckan --config=/etc/ckan/production.ini harvester initdb
 
 
-Despues de este paso, CKAN con los plugins debería estar corriendo en CKAN_SITE_URL.
+## Chequear los logs
 
-Chequear los logs
 - docker logs -f ckan
 
-## Agregar usuario admin
+## Agregar usuario administrador
 
 - sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
 
+## Modificar rutas de redireccionamiento del header del plugin gobar_theme --> lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
 
-Este comando crea un usuario para iniciar sesion. Las credenciales son
+- sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckanext-gobar-theme/ckanext/gobar_theme/templates/header.html
 
-usuario: administrador
-password: se ingresa al momento de crear el usuario
+## Modificar la tabla de visualización de datasets(ReclineView) --> linea 193(_newDataExplorer) modificar los views que se requieran.
+
+- sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckan/ckanext/reclineview/theme/public/recline_view.js
+
+
