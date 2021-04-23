@@ -116,7 +116,6 @@ RUN ckan-pip install -e "git+https://github.com/gasti10/ckanext-gobar-theme.git#
 #     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.port = 6379" && \
 #     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.redis_db = 0" && \
 #     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.password ="
-#RUN ckan --config=/etc/ckan/production.ini harvester initdb     
 
 # Add plugins in config-file
 RUN ckan config-tool /etc/ckan/production.ini "ckan.plugins = ${CKAN__PLUGINS}"
