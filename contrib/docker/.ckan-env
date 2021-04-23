@@ -1,0 +1,22 @@
+# Runtime configuration of CKAN enabled through ckanext-envvars
+# Information about how it works: https://github.com/okfn/ckanext-envvars
+# Note that variables here take presedence over build/up time variables in .env
+
+# CKAN Plugins
+CKAN__PLUGINS=envvars image_view text_view recline_view datastore
+
+# SYSADMIN settings, a sysadmin user is created automatically with the below credentials
+CKAN_SYSADMIN_NAME=administrador
+CKAN_SYSADMIN_PASSWORD=12345678
+CKAN_SYSADMIN_EMAIL=admin@example.com
+
+# Email settings
+CKAN_SMTP_SERVER=smtp.corporateict.domain:25
+CKAN_SMTP_STARTTLS=True
+CKAN_SMTP_USER=user
+CKAN_SMTP_PASSWORD=pass
+CKAN_SMTP_MAIL_FROM=ckan@localhost
+
+# Harvest settings
+#CKAN__HARVEST__MQ__TYPE=redis
+#CKAN__HARVEST__MQ__HOSTNAME=redis
