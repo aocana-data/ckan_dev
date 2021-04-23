@@ -87,11 +87,15 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 - sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
 
-## Modificar rutas de redireccionamiento del header del plugin gobar_theme --> lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
+## Modificar rutas de redireccionamiento del header del plugin gobar_theme
+
+Lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
 
 - sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckanext-gobar-theme/ckanext/gobar_theme/templates/header.html
 
-## Modificar la tabla de visualización de datasets(ReclineView) --> linea 193(_newDataExplorer) modificar los views que se requieran.
+## Modificar la tabla de visualización de datasets(ReclineView)
+
+Linea 193(_newDataExplorer) modificar los views que se requieran
 
 - sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckan/ckanext/reclineview/theme/public/recline_view.js
 
