@@ -1,6 +1,6 @@
 # Ckan
 
-Impementacion de Python3.7.9 en contenedor de Ckan 2.9.2
+Impementado con Python3.7.9 y Ckan 2.9.2 en contenedor Docker.
 
 ## Verificar que ckan corre bajo python3.6+
 
@@ -8,7 +8,7 @@ Al compilar la imagen no debe arrojar el siguiente error
 
 DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support pip 21.0 will remove support for this functionality.
 
-## Verificacion numero 2
+## Verificacion interna
 
 - docker-compose exec ckan bash
 
@@ -16,7 +16,9 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 
 - python --version
 
-La respuesta será ... Python 3.7.9
+La respuesta debería ser --> Python 3.7.9, también se puede ver el estado de la instalación utilizando la ruta:
+
+- http://CKAN_SITE_URL/api/3/action/status_show
 
 
 ## Implentacion con Docker
@@ -65,9 +67,6 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL en su versi
 - agregar en la linea de plugins:
     datastore xloader hierarchy_display hierarchy_form gobar_theme
 
-7. Reiniciar si es necesario el contenedor CKAN 
-
-- sudo docker-compose restart ckan
 
 Despues de este paso, CKAN con los plugins debería estar corriendo en CKAN_SITE_URL.
 
