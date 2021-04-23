@@ -48,6 +48,10 @@ ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
+#Mismo valor que el definido en el docker-compose
+ENV POSTGRES_PASSWORD=ckan
+ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme
+#ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme seriestiempoarexplorer harvest ckan_harvester
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -72,6 +76,10 @@ RUN ckan-pip install -U pip && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     chmod +x /ckan-entrypoint.sh && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
+#Set CKAN en espaniol
+RUN ckan config-tool /etc/ckan/production.ini "ckan.locale_default=es"
+#Set Activity streams public
+RUN ckan config-tool /etc/ckan/production.ini "ckan.auth.public_activity_stream_detail = True"
 
 # Setup plugins
 
@@ -86,6 +94,7 @@ RUN ckan-pip install ckanext-xloader && \
     mkdir -m 777 /var/log/ckan/ && \
     cat > /var/log/ckan/ckan-worker.stdout.log && \
     supervisord
+RUN ckan config-tool /etc/ckan/production.ini "ckanext.xloader.jobs_db.uri = postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan"
 
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \
@@ -102,7 +111,15 @@ RUN ckan-pip install -e "git+https://github.com/gasti10/ckanext-gobar-theme.git#
 #RUN ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
 #    cd /usr/lib/ckan/default/src/ckanext-harvest/ && \
 #    ckan-pip install -r pip-requirements.txt
+#RUN ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.type = redis" && \
+#     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.hostname = localhost" && \
+#     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.port = 6379" && \
+#     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.redis_db = 0" && \
+#     ckan config-tool /etc/ckan/production.ini "ckan.harvest.mq.password ="
+#RUN ckan --config=/etc/ckan/production.ini harvester initdb     
 
+# Add plugins in config-file
+RUN ckan config-tool /etc/ckan/production.ini "ckan.plugins = ${CKAN__PLUGINS}"
 
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
