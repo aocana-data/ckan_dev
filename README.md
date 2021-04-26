@@ -87,6 +87,20 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 - sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
 
+## Control del Xloader
+
+Para ingresar al contenedor de CKAN como root
+- sudo docker exec -it -u 0 ckan bash
+
+Controlar si se encuentra corriendo el proceso Xloader del CKAN
+- supervisorctl --> debería devolver algo así: ckan-worker:ckan-worker-00       RUNNING
+
+Caso contrario se deberá lanzar el proceso utilizando el comando:
+- supervisord
+
+Rechequear nuevamente.
+- supervisorctl
+
 ## Modificar rutas de redireccionamiento del header del plugin gobar_theme
 
 Lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
