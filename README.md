@@ -101,6 +101,9 @@ Caso contrario se deberá lanzar el proceso utilizando el comando:
 Rechequear nuevamente.
 - supervisorctl
 
+Ver los logs del Xloader
+- cat /var/log/ckan/ckan-worker.stdout.log
+
 ## Modificar rutas de redireccionamiento del header del plugin gobar_theme
 
 Lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
