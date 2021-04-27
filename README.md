@@ -70,11 +70,15 @@ DATASTORE_READONLY_PASSWORD = datastore
 
 Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
-5. Setear los permisos necesarios para que el datastore funcione correctamente.
+5. Correr el script bash que se encuentra en el directorio que configura el config-file de CKAN, corrobar si el contenido es el correcto para su configuración.
+
+- . ./set-config-ckan.sh
+
+6. Setear los permisos necesarios para que el datastore funcione correctamente.
 
 - sudo docker exec ckan /usr/local/bin/ckan -c /etc/ckan/production.ini datastore set-permissions | sudo docker exec -i db psql -U ckan
 
-6. (Opcional)Iniciar el harvester de ser necesario
+7. (Opcional)Iniciar el harvester de ser necesario
 
 - sudo docker exec ckan ckan --config=/etc/ckan/production.ini harvester initdb
 
@@ -86,23 +90,6 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 ## Agregar usuario administrador
 
 - sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
-
-## Control del Xloader
-
-Para ingresar al contenedor de CKAN como root
-- sudo docker exec -it -u 0 ckan bash
-
-Controlar si se encuentra corriendo el proceso Xloader del CKAN
-- supervisorctl --> debería devolver algo así: ckan-worker:ckan-worker-00       RUNNING
-
-Caso contrario se deberá lanzar el proceso utilizando el comando:
-- supervisord
-
-Rechequear nuevamente.
-- supervisorctl
-
-Ver los logs del Xloader
-- cat /var/log/ckan/ckan-worker.stdout.log
 
 ## Modificar rutas de redireccionamiento del header del plugin gobar_theme
 
