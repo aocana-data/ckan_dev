@@ -89,7 +89,11 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 ## Agregar usuario administrador
 
-- sudo docker-compose exec ckan ckan -c /etc/ckan/production.ini sysadmin add administrador
+Ingresar al contenedor de ckan
+- sudo docker-compose exec ckan bash
+
+Crear el admin-user
+- ckan -c /etc/ckan/production.ini sysadmin add administrador
 
 ## Modificar rutas de redireccionamiento del header del plugin gobar_theme
 
