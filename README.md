@@ -87,6 +87,26 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 - docker logs -f ckan
 
+## Control del Xloader
+
+Para ingresar al contenedor de CKAN como root
+- sudo docker exec -it -u 0 ckan bash
+
+Controlar si se encuentra corriendo el proceso Xloader del CKAN
+- supervisorctl status 
+  --> debería devolver algo así: ckan-worker:ckan-worker-00       RUNNING
+ Si devuelve --> unix:///var/run/supervisor.sock no such file , ejecutar el comado que se encuentra abajo
+
+Caso contrario se deberá lanzar el proceso utilizando el comando:
+- supervisord
+
+Rechequear nuevamente.
+- supervisorctl
+
+Ver los logs del Xloader
+- cat /var/log/ckan/ckan-worker.stdout.log
+
+
 ## Agregar usuario administrador
 
 Ingresar al contenedor de ckan
