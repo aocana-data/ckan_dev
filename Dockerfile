@@ -94,7 +94,7 @@ RUN cd /usr/lib/ckan/venv/src && \
 
 #Harvest
 RUN ckan-pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest && \
-    cd /usr/lib/ckan/default/src/ckanext-harvest/ && \
+    cd /usr/lib/ckan/venv/src/ckanext-harvest/ && \
     ckan-pip install -r pip-requirements.txt
 
 #SeriesTiempoArExplorer
