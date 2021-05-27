@@ -27,7 +27,7 @@ La respuesta debería ser --> Python 3.7.9, también se puede ver el estado de l
 
 - git clone --branch develop-ckan2.9.2-py3.7.2 https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
 
-2. Editar las variables de entorno del archivo Dockerfile
+2. Verificar las variables de entorno del archivo Dockerfile
 
 - cd ckan
 - vi Dockerfile
