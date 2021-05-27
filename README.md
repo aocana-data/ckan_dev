@@ -32,7 +32,7 @@ La respuesta debería ser --> Python 3.7.9, también se puede ver el estado de l
 - cd ckan
 - vi Dockerfile
 
-``` 
+```
 Asegurarse de editar las variables con la configuración que corresponda
 
 ENV POSTGRES_PASSWORD=ckan
@@ -47,7 +47,7 @@ ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hier
 
 - vi .env
 
-``` 
+```
 Asegurarse de editar las siguientes variables con la configuración que corresponda
 
 CKAN_SITE_ID = 127.0.0.1
@@ -82,6 +82,26 @@ Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
 - sudo docker exec ckan ckan --config=/etc/ckan/production.ini harvester initdb
 
+8. (Solo en Localhost) Cargar db inicial con recursos.
+
+Se debe hacer restore de las dbs 'ckan' y 'datastore'
+
+Los archivos dump se encuentran en /db_dumps (se deben descomprimir antes del restore).
+
+Eliminar las dbs creadas por defecto en el contenedor 'db' y crear 2 dbs nuevas. LLamarlas 'ckan' y 'datastore'.
+
+Para saber la ip del contenedor con la db, ejecutar:
+- docker network inspect docker_default
+
+Y correr restore:
+- psql -U ckan -h {ip del contenedor de db} -d ckan -f dump_badata_ckan_dev.sql
+- psql -U ckan -h {ip del contenedor de db} -d datastore -f dump_badata_datastore_dev.sql
+
+9. Si no se visualizan los datasets en la pagina principal del portal,
+   correr reindex desde contanedor de ckan.
+
+- sudo docker exec -it ckan bash
+- ckan -c /etc/ckan/production.ini search-index rebuild
 
 ## Chequear los logs
 
@@ -93,7 +113,7 @@ Para ingresar al contenedor de CKAN como root
 - sudo docker exec -it -u 0 ckan bash
 
 Controlar si se encuentra corriendo el proceso Xloader del CKAN
-- supervisorctl status 
+- supervisorctl status
   --> debería devolver algo así: ckan-worker:ckan-worker-00       RUNNING
  Si devuelve --> unix:///var/run/supervisor.sock no such file , ejecutar el comado que se encuentra abajo
 
