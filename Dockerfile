@@ -19,7 +19,7 @@ RUN apt-get -q -y update \
         libsqlite3-dev \
         tk-dev \
         libgdbm-dev \
-        libc6-dev \ 
+        libc6-dev \
         libbz2-dev \
         zlib1g-dev \
         libreadline-gplv2-dev \
@@ -29,7 +29,7 @@ RUN apt-get -q -y update \
         git-core \
         vim \
         wget \
-        supervisor \ 
+        supervisor \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -41,13 +41,14 @@ RUN wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz && \
     make altinstall
 RUN cd ..
 RUN rm Python-3.7.9.tgz && \
-    rm -r Python-3.7.9  
+    rm -r Python-3.7.9
 
 # Define environment variables
 ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
+ENV POSTGRES_PASSWORD=ckan
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -74,6 +75,7 @@ RUN ckan-pip install -U pip && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
 
 # Setup plugins
+ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme
 
 # Xloader
 RUN ckan-pip install ckanext-xloader && \
@@ -90,7 +92,7 @@ RUN ckan-pip install ckanext-xloader && \
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \
     ckan-pip install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
-    ckan-pip install -r ckanext-hierarchy/requirements.txt        
+    ckan-pip install -r ckanext-hierarchy/requirements.txt
 
 #Harvest
 RUN ckan-pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest && \
@@ -101,7 +103,7 @@ RUN ckan-pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckan
 RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoarexplorer.git#egg=ckanext-seriestiempoarexplorer
 
 #Gobar_theme
-RUN ckan-pip install -e "git+https://github.com/gasti10/ckanext-gobar-theme.git#egg=ckanext-gobar_theme"
+RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
