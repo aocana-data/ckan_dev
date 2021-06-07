@@ -68,6 +68,13 @@ if [ -z "$CKAN_DATAPUSHER_URL" ]; then
     abort "ERROR: no CKAN_DATAPUSHER_URL specified in docker-compose.yml"
 fi
 
+cd /usr/lib/ckan/venv/src/ckanext-gobar-theme
+git fetch
+git pull
+
 set_environment
 ckan --config "$CONFIG" db init
 exec "$@"
+
+
+

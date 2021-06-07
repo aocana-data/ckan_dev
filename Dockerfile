@@ -103,11 +103,13 @@ RUN ckan-pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckan
 RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoarexplorer.git#egg=ckanext-seriestiempoarexplorer
 
 #Gobar_theme
-RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git#egg=ckanext-gobar_theme"
+USER root
+RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_assessment#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
-USER ckan
+#Se comenta la siguiente linea, para que funcione correctamente el pull al repo desde el entrypoint.
+#USER ckan
 EXPOSE 5000
 
 CMD ["ckan","-c","/etc/ckan/production.ini", "run", "--host", "0.0.0.0"]
