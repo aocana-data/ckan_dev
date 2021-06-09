@@ -69,6 +69,8 @@ if [ -z "$CKAN_DATAPUSHER_URL" ]; then
 fi
 
 cd /usr/lib/ckan/venv/src/ckanext-gobar-theme
+git reset --hard HEAD
+git checkout ckan2.9_assessment
 git fetch
 git pull
 
