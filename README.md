@@ -124,7 +124,7 @@ Rechequear nuevamente.
 - supervisorctl
 
 Ver los logs del Xloader
-- cat /var/log/ckan/ckan-worker.stdout.log
+- cat /var/log/ckan/ckan-worker.stderr.log
 
 
 ## Agregar usuario administrador
