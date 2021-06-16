@@ -79,13 +79,18 @@ ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hier
 
 
 # Google Analytics
-ENV GOOGLEANALYTICS__ID UA-101681828-1
-ENV GOOGLEANALYTICS_RESOURCE_PREFIX /downloads/
-ENV GOOGLEANALYTICS__DOMAIN auto
-
+USER root
 RUN cd /usr/lib/ckan/venv/src && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-googleanalytics.git#egg=ckanext-googleanalytics" && \
     ckan-pip install -r ckanext-googleanalytics/requirements.txt
+
+ENV GOOGLEANALYTICS__ID UA-126967437-1
+ENV GOOGLEANALYTICS__ACCOUNT data.buenosaires.gob.ar
+#ENV GOOGLEANALYTICS__USERNAME ejemplo@gmail.com
+#ENV GOOGLEANALYTICS__PASSWORD ************
+#ENV GOOGLEANALYTICS_RESOURCE_PREFIX /downloads/
+#ENV GOOGLEANALYTICS__DOMAIN auto
+
 
 # Xloader
 RUN ckan-pip install ckanext-xloader && \
