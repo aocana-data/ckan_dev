@@ -12,6 +12,10 @@ volumes:
 services:
   ckan:
     container_name: ckan
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     build:
       context: ../../
       args:
