@@ -48,7 +48,6 @@ ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
-ENV POSTGRES_PASSWORD=ckan
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -84,13 +83,6 @@ RUN cd /usr/lib/ckan/venv/src && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-googleanalytics.git#egg=ckanext-googleanalytics" && \
     ckan-pip install -r ckanext-googleanalytics/requirements.txt
 
-ENV GOOGLEANALYTICS__ID UA-126967437-1
-ENV GOOGLEANALYTICS__ACCOUNT data.buenosaires.gob.ar
-#ENV GOOGLEANALYTICS__USERNAME ejemplo@gmail.com
-#ENV GOOGLEANALYTICS__PASSWORD ************
-#ENV GOOGLEANALYTICS_RESOURCE_PREFIX /downloads/
-#ENV GOOGLEANALYTICS__DOMAIN auto
-
 
 # Xloader
 RUN ckan-pip install ckanext-xloader && \
@@ -119,7 +111,7 @@ RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoar
 
 #Gobar_theme
 USER root
-RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_dev#egg=ckanext-gobar_theme"
+RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_assessment#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 

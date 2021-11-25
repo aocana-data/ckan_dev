@@ -15,8 +15,8 @@ sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "ckan.plugins = 
 sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "ckanext.xloader.jobs_db.uri = postgresql://ckan:ckan@db/ckan"
 
 ##Settings googleanalytics
-sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.id = UA-126967437-1"
-sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.account = data.buenosaires.gob.ar"
+sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.id = ${ID}"
+sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.account = ${ACCOUNT}"
 #sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.username = ejemplo@gmail.com"
 #sudo docker exec ckan ckan config-tool /etc/ckan/production.ini "googleanalytics.password = **************"
 
