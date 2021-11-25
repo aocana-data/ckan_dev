@@ -1,11 +1,13 @@
 <li class="item {{ activity.activity_type|replace(' ', '-')|lower }}">
+  <i class="fa icon fa-file"></i>
   <p>
-    {{ _('Se actualizó el {resource} en el dataset {dataset}').format(
+    {{ _('{actor} updated the resource {resource} in the dataset {dataset}').format(
+      actor=ah.actor(activity),
       resource=ah.resource(activity),
       dataset=ah.datset(activity)
     )|safe }}
     <br />
-    <span class="date">
+    <span class="date" title="{{ h.render_datetime(activity.timestamp, with_hours=True) }}">
       {{ h.time_ago_from_timestamp(activity.timestamp) }}
     </span>
   </p>

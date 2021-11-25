@@ -9458,7 +9458,7 @@ h4 small {
 @media (min-width: 768px) {
   .main {
     padding-top: 10px;
-    background: var(--grisulado-1-fondo-secundario) 0% 0% no-repeat padding-box;
+    background: #eee url("../../../base/images/bg.png");
   }
 }
 [role=main],

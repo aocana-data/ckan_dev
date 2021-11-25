@@ -2770,9 +2770,8 @@ fieldset[disabled] .btn {
 }
 .btn-default {
   color: #333;
-  background-color: #fed11a;
+  background-color: #fff;
   border-color: #ccc;
-  font-weight: bold;
 }
 .btn-default:hover,
 .btn-default:focus,

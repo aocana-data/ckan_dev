@@ -26,8 +26,6 @@ write_config () {
       "ckan.storage_path = /var/lib/ckan" \
       "email_to = disabled@example.com" \
       "error_email_from = ckan@$(hostname -f)" \
-      "ckan.locale_default=es" \
-      "ckanext.xloader.jobs_db.uri = ${DATABASE_URL}"
       "ckan.site_url = http://192.168.0.6"
 
   if [ -n "$ERROR_EMAIL" ]; then

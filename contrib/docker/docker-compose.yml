@@ -47,11 +47,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1.0
           memory: 1024M
         reservations:
           memory: 512M
-
+      
   db:
     container_name: db
     build:
@@ -77,13 +76,6 @@ services:
      - "8983:8983"
     volumes:
       - solr_data:/opt/solr/server/solr/ckan/data
-    deploy:
-      resources:
-        limits:
-          cpus: 1.0
-          memory: 1024M
-        reservations:
-          memory: 512M
 
   redis:
     container_name: redis

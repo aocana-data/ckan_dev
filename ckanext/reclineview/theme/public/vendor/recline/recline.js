@@ -2626,9 +2626,9 @@ my.MultiView = Backbone.View.extend({
       </div> \
       <div class="recline-results-info"> \
       {{#recordCountWasEstimated}} \
-        <span class="doc-count-approx">Alrededor de </span> \
+        <span class="doc-count-approx">about</span> \
       {{/recordCountWasEstimated}} \
-      <span class="doc-count">{{recordCount}}</span> registros \
+      <span class="doc-count">{{recordCount}}</span> records \
       </div> \
       <div class="menu-right"> \
         <div class="btn-group" data-toggle="buttons-checkbox"> \
@@ -4317,7 +4317,7 @@ my.QueryEditor = Backbone.View.extend({
             <i class="glyphicon glyphicon-search"></i> \
           </div> \
           <label for="q">Search</label> \
-          <input class="form-control search-query" type="text" id="q" name="q" value="{{q}}" placeholder="Buscar datos ..."> \
+          <input class="form-control search-query" type="text" id="q" name="q" value="{{q}}" placeholder="Search data ..."> \
         </div> \
       </div> \
       <button type="submit" class="btn btn-default">Go &raquo;</button> \
