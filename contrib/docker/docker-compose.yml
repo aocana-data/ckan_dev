@@ -1,5 +1,3 @@
-# docker-compose build && docker-compose up -d
-# If "docker-compose logs ckan" shows DB not ready, run "docker-compose restart ckan" a few times.
 version: "3"
 
 volumes:
@@ -12,23 +10,28 @@ volumes:
 services:
   ckan:
     container_name: ckan
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     build:
       context: ../../
       args:
           - CKAN_SITE_URL=${CKAN_SITE_URL}
-    networks:
-      - frontend
-      - backend
-    depends_on:
+    links:
       - db
+      - solr
+      - redis
+    depends_on:
+      - solr
     ports:
       - "0.0.0.0:${CKAN_PORT}:5000"
-    env_file:
-      - ./.env
     environment:
-      - CKAN_SQLALCHEMY_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan
-      - CKAN_DATASTORE_WRITE_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/datastore
-      - CKAN_DATASTORE_READ_URL=postgresql://datastore_ro:${DATASTORE_READONLY_PASSWORD}@db/datastore
+      # Defaults work with linked containers, change to use own Postgres, SolR, Redis or Datapusher
+      - CKAN_SQLALCHEMY_URL=postgresql://ckan:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/ckan
+      - CKAN_DATASTORE_WRITE_URL=postgresql://ckan:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/datastore
+      - CKAN_DATASTORE_READ_URL=postgresql://datastore_ro:${DATASTORE_READONLY_PASSWORD}@${POSTGRES_HOST}/datastore
       - CKAN_SOLR_URL=http://solr:8983/solr/ckan
       - CKAN_REDIS_URL=redis://redis:6379/1
       - CKAN_DATAPUSHER_URL=http://datapusher:8800
@@ -36,27 +39,12 @@ services:
       - CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
     volumes:
       - ckan_config:/etc/ckan
       - ckan_home:/usr/lib/ckan
       - ckan_storage:/var/lib/ckan
-
-  datapusher:
-    container_name: datapusher
-    image: ghcr.io/keitaroinc/datapusher:${DATAPUSHER_VERSION}
-    networks:
-      - frontend
-      - backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATAPUSHER_MAX_CONTENT_LENGTH=${DATAPUSHER_MAX_CONTENT_LENGTH}
-      - DATAPUSHER_CHUNK_SIZE=${DATAPUSHER_CHUNK_SIZE}
-      - DATAPUSHER_CHUNK_INSERT_ROWS=${DATAPUSHER_CHUNK_INSERT_ROWS}
-      - DATAPUSHER_DOWNLOAD_TIMEOUT=${DATAPUSHER_DOWNLOAD_TIMEOUT}
-      - DATAPUSHER_SSL_VERIFY=${DATAPUSHER_SSL_VERIFY}
-      - DATAPUSHER_REWRITE_RESOURCES=${DATAPUSHER_REWRITE_RESOURCES}
-      - DATAPUSHER_REWRITE_URL=${DATAPUSHER_REWRITE_URL}
 
   db:
     container_name: db
@@ -66,12 +54,9 @@ services:
       args:
         - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - backend
     environment:
       - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGDATA=/var/lib/postgresql/data/db
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -79,24 +64,17 @@ services:
 
   solr:
     container_name: solr
-    image: solr:8.11.1
-    networks:
-      - backend
-    env_file:
-      - ./.env
-    environment:
-      - CKAN_CORE_NAME=${CKAN_CORE_NAME}
-      - CKAN_VERSION=${CKAN_VERSION}
+    logging:
+            driver: "json-file"
+            options:
+                    max-size: "10m"
+                    max-file: "3"
+    build:
+      context: ../../
+      dockerfile: contrib/docker/solr/Dockerfile
     volumes:
-      - solr_data:/var/solr
-      - ./solr8/ckan_init_solr.sh:/docker-entrypoint-initdb.d/ckan_init_solr.sh
+      - solr_data:/opt/solr/server/solr/ckan/data
 
   redis:
     container_name: redis
-    image: redis:${REDIS_VERSION}
-    networks:
-      - backend
-
-networks:
-  frontend:
-  backend:
+    image: redis:latest

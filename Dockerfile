@@ -1,4 +1,5 @@
 FROM ubuntu:focal-20210119
+MAINTAINER Open Knowledge
 
 # Set timezone
 ENV TZ=UTC
@@ -16,7 +17,7 @@ RUN update-locale LANG=${LC_ALL}
 RUN apt-get -q -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
     && apt-get -q -y install \
-	    python3.8 \
+	python3.8 \
         python3-dev \
         python3-pip \
         python3-venv \
@@ -40,15 +41,15 @@ RUN apt-get -q -y update \
         git-core \
         vim \
         wget \
-	    curl \
+	curl \
         supervisor \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Define environment variables
-ENV CKAN_HOME=/usr/lib/ckan
-ENV CKAN_VENV=$CKAN_HOME/venv
-ENV CKAN_CONFIG=/etc/ckan
+ENV CKAN_HOME /usr/lib/ckan
+ENV CKAN_VENV $CKAN_HOME/venv
+ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
 
 # Build-time variables specified by docker-compose.yml / .env
@@ -63,6 +64,7 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
     ln -s $CKAN_VENV/bin/pip3 /usr/local/bin/ckan-pip3 &&\
     ln -s $CKAN_VENV/bin/ckan /usr/local/bin/ckan
 
+# Virtual environment binaries/scripts to be used first
 ENV PATH=${CKAN_VENV}/bin:${PATH}
 
 # Setup CKAN
@@ -77,7 +79,15 @@ RUN ckan-pip3 install -U pip && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
 
 # Setup plugins (GoogleAnalytics debe estar al final siempre.)
-ENV CKAN_PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme webpage_view datapusher seriestiempoarexplorer harvest ckan_harvester
+ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme googleanalytics
+
+
+# Google Analytics
+USER root
+RUN cd /usr/lib/ckan/venv/src && \
+    ckan-pip3 install -e "git+https://github.com/ckan/ckanext-googleanalytics.git#egg=ckanext-googleanalytics" && \
+    ckan-pip3 install -r ckanext-googleanalytics/requirements.txt
+
 
 # Xloader
 RUN ckan-pip3 install ckanext-xloader && \
@@ -106,10 +116,12 @@ RUN ckan-pip3 install -e git+https://github.com/datosgobar/ckanext-seriestiempoa
 
 #Gobar_theme
 USER root
-RUN ckan-pip3 install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan_gcba#egg=ckanext-gobar_theme"
+RUN ckan-pip3 install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_assessment#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
+#Se comenta la siguiente linea, para que funcione correctamente el pull al repo desde el entrypoint.
+#USER ckan
 EXPOSE 5000
 
 CMD ["ckan","-c","/etc/ckan/production.ini", "run", "--host", "0.0.0.0"]
