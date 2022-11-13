@@ -106,11 +106,9 @@ def get_table_and_function_names_from_sql(context, sql):
             query_plan = json.loads(result['QUERY PLAN'])
             plan = query_plan[0]['Plan']
 
-            t, q, f = _parse_query_plan(plan)
+            t, q = _get_table_names_queries_from_plan(plan)
             table_names.extend(t)
             queries.extend(q)
-
-            function_names = list(set(function_names) | set(f))
 
         except ValueError:
             log.error('Could not parse query plan')
@@ -119,41 +117,28 @@ def get_table_and_function_names_from_sql(context, sql):
     return table_names, function_names
 
 
-def _parse_query_plan(plan):
-    '''
-    Given a Postgres Query Plan object (parsed from the output of an EXPLAIN
-    query), returns a tuple with three items:
-
-    * A list of tables involved
-    * A list of remaining queries to parse
-    * A list of function names involved
-    '''
+def _get_table_names_queries_from_plan(plan):
 
     table_names = []
     queries = []
-    functions = []
 
     if plan.get('Relation Name'):
         table_names.append(plan['Relation Name'])
-    if 'Function Name' in plan:
-        if plan['Function Name'].startswith(
-                'crosstab'):
-            try:
-                queries.append(_get_subquery_from_crosstab_call(
-                    plan['Function Call']))
-            except ValueError:
-                table_names.append('_unknown_crosstab_sql')
-        else:
-            functions.append(plan['Function Name'])
+    if 'Function Name' in plan and plan['Function Name'].startswith(
+            'crosstab'):
+        try:
+            queries.append(_get_subquery_from_crosstab_call(
+                plan['Function Call']))
+        except ValueError:
+            table_names.append('_unknown_crosstab_sql')
 
     if 'Plans' in plan:
         for child_plan in plan['Plans']:
-            t, q, f = _parse_query_plan(child_plan)
+            t, q = _get_table_names_queries_from_plan(child_plan)
             table_names.extend(t)
             queries.extend(q)
-            functions.extend(f)
 
-    return table_names, queries, functions
+    return table_names, queries
 
 
 def _get_function_names_from_sql(sql):

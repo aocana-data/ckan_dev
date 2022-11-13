@@ -1,26 +1,14 @@
-FROM ubuntu:focal-20210119
+# See CKAN docs on installation from Docker Compose on usage
+FROM debian:stretch
 MAINTAINER Open Knowledge
-
-# Set timezone
-ENV TZ=UTC
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-# Setting the locale
-ENV LC_ALL=en_US.UTF-8       
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y locales
-RUN sed -i "/$LC_ALL/s/^# //g" /etc/locale.gen
-RUN dpkg-reconfigure --frontend=noninteractive locales 
-RUN update-locale LANG=${LC_ALL}
 
 # Install required system packages
 RUN apt-get -q -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
     && apt-get -q -y install \
-	python3.8 \
         python3-dev \
         python3-pip \
-        python3-venv \
+        python3-virtualenv \
         python3-wheel \
         libpq-dev \
         libxml2-dev \
@@ -41,16 +29,26 @@ RUN apt-get -q -y update \
         git-core \
         vim \
         wget \
-	curl \
         supervisor \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install python 3.7.9
+RUN wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz && \
+    tar xzf Python-3.7.9.tgz && \
+    cd Python-3.7.9 && \
+    ./configure --enable-optimizations && \
+    make altinstall
+RUN cd ..
+RUN rm Python-3.7.9.tgz && \
+    rm -r Python-3.7.9
 
 # Define environment variables
 ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
+ENV POSTGRES_PASSWORD=ckan
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -60,19 +58,17 @@ RUN useradd -r -u 900 -m -c "ckan account" -d $CKAN_HOME -s /bin/false ckan
 
 # Setup virtual environment for CKAN
 RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
-    python3 -m venv $CKAN_VENV && \
-    ln -s $CKAN_VENV/bin/pip3 /usr/local/bin/ckan-pip3 &&\
+    python3.7 -m venv $CKAN_VENV $CKAN_VENV && \
+    ln -s $CKAN_VENV/bin/pip /usr/local/bin/ckan-pip &&\
+    ln -s $CKAN_VENV/bin/paster /usr/local/bin/ckan-paster &&\
     ln -s $CKAN_VENV/bin/ckan /usr/local/bin/ckan
-
-# Virtual environment binaries/scripts to be used first
-ENV PATH=${CKAN_VENV}/bin:${PATH}
 
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
-RUN ckan-pip3 install -U pip && \
-    ckan-pip3 install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
-    ckan-pip3 install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
-    ckan-pip3 install -e $CKAN_VENV/src/ckan/ && \
+RUN ckan-pip install -U pip && \
+    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
+    ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
+    ckan-pip install -e $CKAN_VENV/src/ckan/ && \
     ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     chmod +x /ckan-entrypoint.sh && \
@@ -81,18 +77,21 @@ RUN ckan-pip3 install -U pip && \
 # Setup plugins (GoogleAnalytics debe estar al final siempre.)
 ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme googleanalytics
 
-
 # Google Analytics
 USER root
 RUN cd /usr/lib/ckan/venv/src && \
-    ckan-pip3 install -e "git+https://github.com/ckan/ckanext-googleanalytics.git#egg=ckanext-googleanalytics" && \
-    ckan-pip3 install -r ckanext-googleanalytics/requirements.txt
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-googleanalytics.git#egg=ckanext-googleanalytics" && \
+    ckan-pip install -r ckanext-googleanalytics/requirements.txt
 
+#ENV GOOGLEANALYTICS__USERNAME ejemplo@gmail.com
+#ENV GOOGLEANALYTICS__PASSWORD ************
+#ENV GOOGLEANALYTICS_RESOURCE_PREFIX /downloads/
+#ENV GOOGLEANALYTICS__DOMAIN auto
 
 # Xloader
-RUN ckan-pip3 install ckanext-xloader && \
-    ckan-pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-xloader/master/requirements.txt && \
-    ckan-pip3 install -U requests[security] && \
+RUN ckan-pip install ckanext-xloader && \
+    ckan-pip install -r https://raw.githubusercontent.com/ckan/ckanext-xloader/master/requirements.txt && \
+    ckan-pip install -U requests[security] && \
     cp /usr/lib/ckan/venv/src/ckan/ckan/config/supervisor-ckan-worker.conf /etc/supervisor/conf.d && \
     sed -i 's/default/venv/' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
     sed -i 's/default//' /etc/supervisor/conf.d/supervisor-ckan-worker.conf && \
@@ -103,20 +102,20 @@ RUN ckan-pip3 install ckanext-xloader && \
 
 #Hierarchy
 RUN cd /usr/lib/ckan/venv/src && \
-    ckan-pip3 install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
-    ckan-pip3 install -r ckanext-hierarchy/requirements.txt
+    ckan-pip install -e "git+https://github.com/davidread/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
+    ckan-pip install -r ckanext-hierarchy/requirements.txt
 
 #Harvest
-RUN ckan-pip3 install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest && \
+RUN ckan-pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest && \
     cd /usr/lib/ckan/venv/src/ckanext-harvest/ && \
-    ckan-pip3 install -r pip-requirements.txt
+    ckan-pip install -r pip-requirements.txt
 
 #SeriesTiempoArExplorer
-RUN ckan-pip3 install -e git+https://github.com/datosgobar/ckanext-seriestiempoarexplorer.git#egg=ckanext-seriestiempoarexplorer
+RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoarexplorer.git#egg=ckanext-seriestiempoarexplorer
 
 #Gobar_theme
 USER root
-RUN ckan-pip3 install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_assessment#egg=ckanext-gobar_theme"
+RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gcbaandinotheme.git@ckan2.9_assessment#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 

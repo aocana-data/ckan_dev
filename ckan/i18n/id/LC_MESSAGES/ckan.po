@@ -5,7 +5,6 @@
 # 
 # Translators:
 # Adrià Mercader <adria.mercader@okfn.org>, 2020
-# adjarriawan <muhammad.rizky.adjarriawan@gmail.com>, 2021
 # 
 #, fuzzy
 msgid ""
@@ -14,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-07-21 11:43+0200\n"
 "PO-Revision-Date: 2020-07-09 15:07+0000\n"
-"Last-Translator: adjarriawan <muhammad.rizky.adjarriawan@gmail.com>, 2021\n"
+"Last-Translator: Adrià Mercader <adria.mercader@okfn.org>, 2020\n"
 "Language-Team: Indonesian (https://www.transifex.com/okfn/teams/11162/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +24,7 @@ msgstr ""
 
 #: ckanext/audioview/plugin.py:25 ckanext/audioview/plugin.py:30
 msgid "Audio"
-msgstr "Suara"
+msgstr ""
 
 #: ckanext/audioview/theme/templates/audio_form.html:3
 msgid "Audio url"
@@ -160,7 +159,7 @@ msgstr ""
 
 #: ckanext/datastore/backend/postgres.py:1067
 msgid "The data was invalid: {}"
-msgstr "Data tidak valid:{}"
+msgstr ""
 
 #: ckanext/datastore/logic/action.py:277 ckanext/datastore/logic/action.py:309
 #: ckanext/datastore/logic/action.py:373 ckanext/datastore/logic/action.py:509
@@ -254,7 +253,7 @@ msgstr ""
 #: ckanext/datastore/templates-bs2/ajax_snippets/api_info.html:116
 #: ckanext/datastore/templates/ajax_snippets/api_info.html:118
 msgid "Example: Python"
-msgstr "Contoh: Python"
+msgstr ""
 
 #: ckan/templates/group/member_new.html:73
 #: ckanext/datastore/templates-bs2/datastore/dictionary.html:32
@@ -491,19 +490,19 @@ msgstr "Sumberdaya"
 
 #: ckanext/expire_api_token/templates/user/api_tokens.html:6
 msgid "Second"
-msgstr "Detik"
+msgstr ""
 
 #: ckanext/expire_api_token/templates/user/api_tokens.html:7
 msgid "Minute"
-msgstr "Menit"
+msgstr ""
 
 #: ckanext/expire_api_token/templates/user/api_tokens.html:8
 msgid "Hour"
-msgstr "Jam"
+msgstr ""
 
 #: ckanext/expire_api_token/templates/user/api_tokens.html:9
 msgid "Day"
-msgstr "Hari"
+msgstr ""
 
 #: ckanext/expire_api_token/templates/user/api_tokens.html:15
 msgid "Expires in"
@@ -722,7 +721,7 @@ msgstr ""
 
 #: ckanext/videoview/plugin.py:25 ckanext/videoview/plugin.py:31
 msgid "Video"
-msgstr "Video"
+msgstr ""
 
 #: ckanext/videoview/theme/templates/video_form.html:3
 msgid "Video url"

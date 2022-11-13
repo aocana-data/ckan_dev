@@ -10,146 +10,141 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 
 ## Verificacion interna
 
-Verificar version de python en el contenedor `ckan`:
+- docker-compose exec ckan bash
 
-    docker-compose exec ckan bash
-    source /usr/lib/ckan/venv/bin/activate
-    python --version
+- source /usr/lib/ckan/venv/bin/activate
 
-  La respuesta debería ser `Python 3.7.9`. También se puede ver el estado de la instalación utilizando la ruta:
+- python --version
 
-    http://CKAN_SITE_URL/api/3/action/status_show
+La respuesta debería ser --> Python 3.7.9, también se puede ver el estado de la instalación utilizando la ruta:
+
+- http://CKAN_SITE_URL/api/3/action/status_show
 
 
 ## Implentacion con Docker
 
-Clonar el repositorio:
+1. clonar el repositorio
 
-    git clone -b produ-ckan2.9 https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
+- git clone --branch develop-ckan2.9.2-py3.7.2 https://repositorio-asi.buenosaires.gob.ar/ssppbe_usig/ckan.git
 
+2. Verificar las variables de entorno del archivo Dockerfile
 
-Verificar las variables de entorno del archivo `Dockerfile`:
+- cd ckan
+- vi Dockerfile
 
-    cd ckan
-    nano Dockerfile
-
-```bash
+```
 Asegurarse de editar las variables con la configuración que corresponda
 
-#Habilitar los plugins que crea correspondientes
-ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data googleanalytics
-
-Para configurar el google analytics, ademas de agregarlo en la lista de plugins, hay que modificar los parametros comentados en el Dockerfile en la linea ##Settings googleanalytics`
-
-Repetir los mismos pasos en `contrib/docker/set-config-ckan.sh`
+ENV POSTGRES_PASSWORD=ckan
+#Habilitar los plugins que crea correspondiente
+ENV CKAN__PLUGINS stats text_view image_view recline_view datastore xloader hierarchy_display hierarchy_form gobar_theme
 
 ```
 
+3. Editar el archivo de variables de entorno del docker-compose
 
-Asegurarse de que el puerto 5000 esta libre:
+- cd ckan/contrib/docker
 
-    sudo netstat -pna | grep 5000
+- vi .env
 
-  De no estarlo, cierre el servicio que usa este puerto antes de continuar.
+```
+Asegurarse de editar las siguientes variables con la configuración que corresponda
 
+CKAN_SITE_ID = 127.0.0.1
 
-Compilar la imagen docker e iniciar el stack:
+CKAN_SITE_URL= http://localhost:5000
 
-    . ./build.sh
+CKAN_PORT= 5000
 
-  Despues de crearse los contenedores hay que esperar unos segundos para que se configure el ckan.
+POSTGRES_PASSWORD = ckan
 
+POSTGRES_PORT = 5432
 
-Setear los permisos necesarios para que el datastore funcione correctamente.:
+DATASTORE_READONLY_PASSWORD = datastore
 
-    sudo docker exec ckan /usr/local/bin/ckan -c /etc/ckan/production.ini datastore set-permissions | sudo docker exec -i db psql -U ckan
+```
 
+4. Compilar la imagen docker e iniciar el stack
 
-Iniciar el harvester de ser necesario (Opcional):
+- sudo docker-compose up -d --build
 
-    sudo docker exec ckan ckan --config=/etc/ckan/production.ini harvester initdb
+Despues de este paso, CKAN debería estar corriendo en CKAN_SITE_URL.
 
+5. Correr el script bash que se encuentra en el directorio que configura el config-file de CKAN, corrobar si el contenido es el correcto para su configuración.
 
-Cargar db inicial con recursos (Solo en Localhost):
+- . ./set-config-ckan.sh
 
-  Se debe hacer restore de las dbs `ckan` y `datastore`
+6. Setear los permisos necesarios para que el datastore funcione correctamente.
 
-  Los archivos dump se encuentran en `/db_dumps` (se deben descomprimir antes del restore).
+- sudo docker exec ckan /usr/local/bin/ckan -c /etc/ckan/production.ini datastore set-permissions | sudo docker exec -i db psql -U ckan
 
-  Eliminar las dbs creadas por defecto en el contenedor 'db' y crear 2 dbs nuevas. LLamarlas 'ckan' y 'datastore'.
+7. (Opcional)Iniciar el harvester de ser necesario
 
-  Para saber la ip del contenedor con la db, ejecutar:
+- sudo docker exec ckan ckan --config=/etc/ckan/production.ini harvester initdb
 
-    docker network inspect docker_default
+8. (Solo en Localhost) Cargar db inicial con recursos.
 
-  Y correr restore:
+Se debe hacer restore de las dbs 'ckan' y 'datastore'
 
-    psql -U ckan -h {ip del contenedor de db} -d ckan -f dump_badata_ckan_dev.sql
-    psql -U ckan -h {ip del contenedor de db} -d datastore -f dump_badata_datastore_dev.sql
+Los archivos dump se encuentran en /db_dumps (se deben descomprimir antes del restore).
 
+Eliminar las dbs creadas por defecto en el contenedor 'db' y crear 2 dbs nuevas. LLamarlas 'ckan' y 'datastore'.
 
-Si no se visualizan los datasets en la pagina principal del portal,
-  correr reindex desde contanedor de ckan:
+Para saber la ip del contenedor con la db, ejecutar:
+- docker network inspect docker_default
 
-    sudo docker exec -it ckan bash
-    ckan -c /etc/ckan/production.ini search-index rebuild
+Y correr restore:
+- psql -U ckan -h {ip del contenedor de db} -d ckan -f dump_badata_ckan_dev.sql
+- psql -U ckan -h {ip del contenedor de db} -d datastore -f dump_badata_datastore_dev.sql
+
+9. Si no se visualizan los datasets en la pagina principal del portal,
+   correr reindex desde contanedor de ckan.
+
+- sudo docker exec -it ckan bash
+- ckan -c /etc/ckan/production.ini search-index rebuild
 
 ## Chequear los logs
 
-    docker logs -f ckan
+- docker logs -f ckan
 
 ## Control del Xloader
 
-Para ingresar al contenedor de CKAN como root:
+Para ingresar al contenedor de CKAN como root
+- sudo docker exec -it -u 0 ckan bash
 
-    sudo docker exec -it -u 0 ckan bash
+Controlar si se encuentra corriendo el proceso Xloader del CKAN
+- supervisorctl status
+  --> debería devolver algo así: ckan-worker:ckan-worker-00       RUNNING
+ Si devuelve --> unix:///var/run/supervisor.sock no such file , ejecutar el comado que se encuentra abajo
 
-Controlar si se encuentra corriendo el proceso Xloader del CKAN:
+Caso contrario se deberá lanzar el proceso utilizando el comando:
+- supervisord
 
-    supervisorctl status
+Rechequear nuevamente.
+- supervisorctl
 
-  Debería devolver algo así: `ckan-worker:ckan-worker-00       RUNNING`
-  Si devuelve `unix:///var/run/supervisor.sock no such file`, ejecutar el comado que se encuentra abajo
-
-    supervisord
-
-Rechequear nuevamente:
-
-    supervisorctl
-
-Se abre una consola. Salir con Ctrl + d.
-
-Ver los logs del Xloader:
-
-    cat /var/log/ckan/ckan-worker.stderr.log
+Ver los logs del Xloader
+- cat /var/log/ckan/ckan-worker.stderr.log
 
 
 ## Agregar usuario administrador
 
-Ingresar al contenedor de ckan:
+Ingresar al contenedor de ckan
+- sudo docker-compose exec ckan bash
 
-    sudo docker-compose exec ckan bash
+Crear el admin-user
+- ckan -c /etc/ckan/production.ini sysadmin add administrador
 
-Crear el admin-user:
-    
-    ckan -c /etc/ckan/production.ini sysadmin add administrador
+## Modificar rutas de redireccionamiento del header del plugin gobar_theme
 
-Para ingresar como administrador, entrar desde:
+Lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs)
 
-    http://ip:5000/ingresar
+- sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckanext-gobar-theme/ckanext/gobar_theme/templates/header.html
 
+## Modificar la tabla de visualización de datasets(ReclineView)
 
-## Configuraciones Adicionales (Opcional)
-### Modificar rutas de redireccionamiento del header del plugin gobar_theme
+Linea 193(_newDataExplorer) modificar los views que se requieran
 
-Lineas 6(logo) - 12(BA Data) - 35(Historias) - 36(APIs):
-
-    sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckanext-gobar-theme/ckanext/gobar_theme/templates/header.html
-
-### Modificar la tabla de visualización de datasets(ReclineView)
-
-Linea 193(_newDataExplorer) modificar los views que se requieran:
-
-    sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckan/ckanext/reclineview/theme/public/recline_view.js
+- sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckan/ckanext/reclineview/theme/public/recline_view.js
 
 
