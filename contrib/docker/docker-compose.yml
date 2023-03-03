@@ -24,6 +24,7 @@ services:
       - ckan
     ports:
       - "0.0.0.0:${NGINX_PORT_HOST}:${NGINX_PORT}"
+      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
     volumes:
       - ./nginx/setup/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/setup/sites-available/ckan.conf:/etc/nginx/sites-available/ckan.conf
