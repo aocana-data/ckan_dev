@@ -97,7 +97,7 @@ RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoar
 
 #Gobar_theme
 USER root
-RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gobar-theme.git#egg=ckanext-gobar_theme"
+RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gobar-theme.git@render#egg=ckanext-gobar_theme"
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
