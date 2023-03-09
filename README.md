@@ -165,3 +165,7 @@ mkdir ckan/contrib/docker/ckan_home
   * contrib/docker/ckan-entrypoint.sh
   * contrib/docker/docker-compose.yml
 
+
+# STEPS PARA GENERAR SUS 
+ * suele demorar unos 10 mis para poder levantar los procesos
+ * posterior a su levantado es necesario documentar que para poder dar de alta los plugins se debe correr el archivo set-config
