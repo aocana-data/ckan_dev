@@ -5,30 +5,30 @@ FROM debian:stretch
 RUN apt-get -q -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
     && apt-get -q -y install \
-        python3-dev \
-        python3-pip \
-        python3-virtualenv \
-        python3-wheel \
-        libpq-dev \
-        libxml2-dev \
-        libxslt-dev \
-        libgeos-dev \
-        libssl-dev \
-        libffi-dev \
-        libsqlite3-dev \
-        tk-dev \
-        libgdbm-dev \
-        libc6-dev \
-        libbz2-dev \
-        zlib1g-dev \
-        libreadline-gplv2-dev \
-        libncursesw5-dev \
-        postgresql-client \
-        build-essential \
-        git-core \
-        vim \
-        wget \
-        supervisor \
+    python3-dev \
+    python3-pip \
+    python3-virtualenv \
+    python3-wheel \
+    libpq-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libgeos-dev \
+    libssl-dev \
+    libffi-dev \
+    libsqlite3-dev \
+    tk-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libbz2-dev \
+    zlib1g-dev \
+    libreadline-gplv2-dev \
+    libncursesw5-dev \
+    postgresql-client \
+    build-essential \
+    git-core \
+    vim \
+    wget \
+    supervisor \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
 

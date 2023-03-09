@@ -73,8 +73,8 @@ ckan -c /etc/ckan/production.ini search-index rebuild
 set_environment
 ckan --config "$CONFIG" db init
 #Setup db tables for googleAnalytics
-#cd /usr/lib/ckan/venv/src/ckanext-googleanalytics
-#ckan initdb --config=/etc/ckan/production.ini
+cd /usr/lib/ckan/venv/src/ckanext-googleanalytics
+ckan initdb --config=/etc/ckan/production.ini
 exec "$@"
 
 

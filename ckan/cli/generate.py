@@ -36,6 +36,7 @@ def generate():
               help=u"Location to put the generated "
               u"template.",
               default=u'.')
+
 def extension(output_dir):
     """Generate empty extension files to expand CKAN.
     """

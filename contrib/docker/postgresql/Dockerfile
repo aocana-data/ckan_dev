@@ -8,6 +8,8 @@ RUN echo "host all  all    0.0.0.0/0  md5" >> /var/lib/postgresql/data/pg_hba.co
 # Customize default user/pass/db
 ENV POSTGRES_DB ckan
 ENV POSTGRES_USER ckan
+ENV PGDATA /var/lib/postgresql/data/some_data
+# ENV POSTGRES_HOST_AUTH_METHOD "trust"
 ARG POSTGRES_PASSWORD
 ARG DS_RO_PASS
 
