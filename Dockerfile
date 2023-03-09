@@ -70,6 +70,7 @@ RUN ckan-pip install -U pip && \
     chmod +x /ckan-entrypoint.sh && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
 
+
 # Xloader
 RUN ckan-pip install ckanext-xloader && \
     ckan-pip install -r https://raw.githubusercontent.com/ckan/ckanext-xloader/master/requirements.txt && \
@@ -99,10 +100,9 @@ RUN ckan-pip install -e git+https://github.com/datosgobar/ckanext-seriestiempoar
 USER root
 RUN ckan-pip install -e "git+https://github.com/datosgcba/ckanext-gobar-theme.git@render#egg=ckanext-gobar_theme"
 
-ENTRYPOINT ["/ckan-entrypoint.sh"]
 
 #Se comenta la siguiente linea, para que funcione correctamente el pull al repo desde el entrypoint.
-#USER ckan
+USER ckan
 EXPOSE 5000
-
+ENTRYPOINT ["/ckan-entrypoint.sh"]
 CMD ["ckan","-c","/etc/ckan/production.ini", "run", "--host", "0.0.0.0"]

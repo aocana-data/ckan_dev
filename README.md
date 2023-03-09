@@ -148,3 +148,20 @@ Linea 193(_newDataExplorer) modificar los views que se requieran
 - sudo vim /var/lib/docker/volumes/docker_ckan_home/_data/venv/src/ckan/ckanext/reclineview/theme/public/recline_view.js
 
 
+
+
+
+---
+
+CREAR CARPETA ckan_home
+
+```
+mkdir ckan/contrib/docker/ckan_home
+```
+
+# VERIFICAR QUE CUANDO SE HACE UN GUARDADO HAY QUE TENER MUCHA CONSIDERACION QUE TODOS LOS ARCHIVOS SOBRE TODO LOS ARCHIVOS :
+
+  * Dockerfile
+  * contrib/docker/ckan-entrypoint.sh
+  * contrib/docker/docker-compose.yml
+
