@@ -159,6 +159,8 @@ CREAR CARPETA ckan_home
 mkdir ckan/contrib/docker/ckan_home
 ```
 
+# TENER MUY EN CUENTA !! CRLF ==> SIEMPRE DEBE SER LF
+
 # VERIFICAR QUE CUANDO SE HACE UN GUARDADO HAY QUE TENER MUCHA CONSIDERACION QUE TODOS LOS ARCHIVOS SOBRE TODO LOS ARCHIVOS :
 
   * Dockerfile
@@ -169,3 +171,6 @@ mkdir ckan/contrib/docker/ckan_home
 # STEPS PARA GENERAR SUS 
  * suele demorar unos 10 mis para poder levantar los procesos
  * posterior a su levantado es necesario documentar que para poder dar de alta los plugins se debe correr el archivo set-config
+
+
+psql -U ckan -h  172.27.0.3 -d datastore -f dump_badata_datastore_dev.sql
