@@ -87,3 +87,12 @@ services:
     volumes:
       - ./nginx/setup/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/setup/sites-available/ckan.conf:/etc/nginx/sites-available/ckan.conf
+
+  varnish:
+    container_name: varnish
+    build:
+      context: varnish/
+      dockerfile: Dockerfile
+
+    depends_on:
+      - nginx
