@@ -32,6 +32,7 @@ RUN apt-get -q -y update \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Install python 3.7.9
 RUN wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz && \
     tar xzf Python-3.7.9.tgz && \
@@ -39,8 +40,10 @@ RUN wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz && \
     ./configure --enable-optimizations && \
     make altinstall
 RUN cd ..
+
 RUN rm Python-3.7.9.tgz && \
     rm -r Python-3.7.9
+
 
 # Define environment variables
 ENV CKAN_HOME /usr/lib/ckan
@@ -54,8 +57,8 @@ RUN useradd -r -u 900 -m -c "ckan account" -d $CKAN_HOME -s /bin/false ckan
 
 # Setup virtual environment for CKAN
 RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
-    python3.7 -m venv $CKAN_VENV $CKAN_VENV && \
-    ln -s $CKAN_VENV/bin/pip /usr/local/bin/ckan-pip &&\
+    python3.7 -m  venv $CKAN_VENV $CKAN_VENV && \
+    ln -s $CKAN_VENV/bin/pip3 /usr/local/bin/ckan-pip &&\
     ln -s $CKAN_VENV/bin/paster /usr/local/bin/ckan-paster &&\
     ln -s $CKAN_VENV/bin/ckan /usr/local/bin/ckan
 

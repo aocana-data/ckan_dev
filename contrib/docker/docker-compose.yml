@@ -5,36 +5,23 @@ version: "3"
 volumes:
   ckan_config:
   ckan_home:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./ckan_home
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: /home/anderson/Desktop/ckan_dev/contrib/docker/ckan_home
+
   ckan_storage:
   pg_data:
   solr_data:
 
 services:
-  nginx:
-    container_name: nginx
-    build:
-      context: nginx/
-      dockerfile: Dockerfile
-    depends_on:
-      - ckan
-    ports:
-      - "0.0.0.0:${NGINX_PORT_HOST}:${NGINX_PORT}"
-      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
-    volumes:
-      - ./nginx/setup/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/setup/sites-available/ckan.conf:/etc/nginx/sites-available/ckan.conf
-
   ckan:
     container_name: ckan
     build:
       context: ../../
       args:
-          - CKAN_SITE_URL=${CKAN_SITE_URL}
+        - CKAN_SITE_URL=${CKAN_SITE_URL}
     env_file:
       - .env
     depends_on:
@@ -58,7 +45,7 @@ services:
       - LANG=C.UTF-8
     volumes:
       - ckan_config:/etc/ckan
-      - ckan_home:/usr/lib/ckan
+      - ckan_home:/usr/dockerlib/ckan
       - ckan_storage:/var/lib/ckan
 
   db:
@@ -87,3 +74,16 @@ services:
     container_name: redis
     image: redis:latest
 
+  nginx:
+    container_name: nginx
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
+    depends_on:
+      - ckan
+    ports:
+      - "0.0.0.0:${NGINX_PORT_HOST}:${NGINX_PORT}"
+      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+    volumes:
+      - ./nginx/setup/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/setup/sites-available/ckan.conf:/etc/nginx/sites-available/ckan.conf

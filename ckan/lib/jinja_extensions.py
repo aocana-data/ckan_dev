@@ -8,7 +8,8 @@ from jinja2 import nodes
 from jinja2 import loaders
 from jinja2 import ext
 from jinja2.exceptions import TemplateNotFound
-from jinja2.utils import open_if_exists, escape
+from jinja2.utils import open_if_exists
+from markupsafe import escape
 from jinja2 import Environment
 from jinja2 import FileSystemBytecodeCache
 
