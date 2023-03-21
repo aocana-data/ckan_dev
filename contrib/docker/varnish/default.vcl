@@ -8,7 +8,7 @@
           #host = "10.22.0.183";
           #host = "127.0.0.1";
           .host = "nginx";
-          .port = "8080";
+          .port = "80";
           .connect_timeout        = 600s;
           .first_byte_timeout     = 600s;
           .between_bytes_timeout  = 600s;

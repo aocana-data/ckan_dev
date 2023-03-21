@@ -81,9 +81,10 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - ckan
-    ports:
-      - "0.0.0.0:${NGINX_PORT_HOST}:${NGINX_PORT}"
-      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+    # ports:
+    #   - "0.0.0.0:${NGINX_PORT_HOST}:${NGINX_PORT}"
+    #   - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+
     volumes:
       - ./nginx/setup/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/setup/sites-available/ckan.conf:/etc/nginx/sites-available/ckan.conf
@@ -93,6 +94,7 @@ services:
     build:
       context: varnish/
       dockerfile: Dockerfile
-
+    ports:
+      - "80:80"
     depends_on:
       - nginx
